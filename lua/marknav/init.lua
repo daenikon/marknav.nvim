@@ -20,12 +20,11 @@ end
 -- Function to check if the cursor is on line with relative link and open the link
 function M.check_cursor_on_link()
     local current_line = vim.api.nvim_get_current_line()
---    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local cursor_col = vim.api.nvim_win_get_cursor(0)[2] + 1
 
     -- Check if the cursor is on a Markdown link (basic pattern matching)
     local link_start, link_end, link_path = string.find(current_line, '%[[^%]]+%]%(([^%)%]]*)%)')
---    if link_path and col >= link_start and col <= link_end then
-    if link_path then
+    if link_path and cursor_col >= link_start and cursor_col <= link_end then
         push_buffer(vim.api.nvim_get_current_buf())
 
         -- Get the directory of the current file
