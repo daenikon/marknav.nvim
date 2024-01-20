@@ -9,7 +9,7 @@ local function push_buffer(bufnr)
 end
 
 -- Function to pop a buffer from the stack and switch to it
-function M.pop_and_go_to_buffer()
+function M.jump_back()
   if #buffer_stack == 0 then
     print("Buffer history is empty.")
     return
@@ -24,59 +24,58 @@ function M.pop_and_go_to_buffer()
   vim.api.nvim_command('buffer ' .. last_bufnr)
 end
 
--- local function is_link_in_line()
-
 -- works for Unix-like systems only
 local function modify_path(linkpath)
   -- if absolute --> return
   if string.sub(linkpath, 1, 1) == "/" then
     return linkpath
   end
-
-  local current_file_dir = vim.fn.expand('%:p:h')
-  return current_file_dir .. '/' .. linkpath
+  -- append relative path to current directory
+  return vim.fn.expand('%:p:h') .. '/' .. linkpath
 end
 
 
-local function is_file_readable(path)
-  return vim.fn.filereadable(path) == 1
-end
+function M.jump_forward()
+    local current_line = vim.api.nvim_get_current_line()
+    local cursor_col = vim.api.nvim_win_get_cursor(0)[2] + 1
 
--- Function to check if the cursor is on the relative link and open the link
-function M.check_cursor_on_link()
-  local current_line = vim.api.nvim_get_current_line()
-  local cursor_col = vim.api.nvim_win_get_cursor(0)[2] + 1
+    local index = 1
+    while true do
+        local link_start, link_end, link_path = string.find(current_line, '%[[^%]]+%]%(([^%)%]]*)%)', index)
+        if not link_start then break end
 
-  local link_start, link_end, link_path = string.find(current_line, '%[[^%]]+%]%(([^%)%]]*)%)')
+        if cursor_col >= link_start and cursor_col <= link_end then
+            local modified_path = modify_path(link_path)
 
-  if not link_path or cursor_col < link_start or cursor_col > link_end then
+            if vim.fn.filereadable(modified_path) == 0 then
+                print("The linked file is not readable: " .. modified_path)
+                return
+            end
+
+            push_buffer(vim.api.nvim_get_current_buf())
+
+            vim.api.nvim_command('edit ' .. modified_path)
+            return
+        end
+
+        index = link_end + 1
+    end
+
     print("No Markdown link found under cursor.")
-    return
-  end
-
-  push_buffer(vim.api.nvim_get_current_buf())
-
-  modified_path = modify_path(link_path)
-
-  if not is_file_readable(modified_path) then
-    print("The linked file is not readable: " .. modified_path)
-    return
-  end
-
-  vim.api.nvim_command('edit ' .. modified_path)
 end
+
 
 
 -- Set up commands for Markdown file navigation
 function M.setup()
   vim.api.nvim_create_user_command(
     'MarkNavNext',
-    M.check_cursor_on_link,
+    M.jump_forward,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
     'MarkNavPrevious',
-    M.pop_and_go_to_buffer,
+    M.jump_back,
     {nargs = 0}
   )
 end
