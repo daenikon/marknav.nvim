@@ -9,7 +9,7 @@ local function push_buffer(bufnr)
 end
 
 -- Function to pop a buffer from the stack and switch to it
-function M.jump_back()
+function M.jump_link_back()
   if #buffer_stack == 0 then
     print("Buffer history is empty.")
     return
@@ -35,20 +35,32 @@ local function modify_path(linkpath)
 end
 
 local function process_link(link_path)
-  local modified_path = modify_path(link_path)
+  local full_path = modify_path(link_path)
 
-  if vim.fn.filereadable(modified_path) == 0 or vim.fn.expand('%:p') == modified_path then
-      print("The linked file is not readable: " .. modified_path)
-      return true
+  -- Handle Errors
+  if vim.fn.filereadable(full_path) == 0 then
+    print("The linked file doesn't exist or isn't readable")
+    return false
+  end
+
+  if vim.fn.expand('%:p') == full_path then
+    print("The link points to the current file")
+    return false
+  end
+
+  if not full_path:match("%.md$") then
+    print("The link points to non-markdown file")
+    return false
   end
 
   push_buffer(vim.api.nvim_get_current_buf())
 
-  vim.api.nvim_command('edit ' .. modified_path)
-  return false
+  vim.api.nvim_command('edit ' .. full_path)
+  return true
 end
 
-function M.jump_forward()
+
+function M.jump_link_forward()
   local current_line = vim.api.nvim_get_current_line()
   local cursor_col = vim.api.nvim_win_get_cursor(0)[2] + 1
 
@@ -103,12 +115,12 @@ end
 function M.setup()
   vim.api.nvim_create_user_command(
     'MarkNavNext',
-    M.jump_forward,
+    M.jump_link_forward,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
     'MarkNavPrevious',
-    M.jump_back,
+    M.jump_link_back,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
