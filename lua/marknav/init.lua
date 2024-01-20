@@ -34,35 +34,68 @@ local function modify_path(linkpath)
   return vim.fn.expand('%:p:h') .. '/' .. linkpath
 end
 
+local function process_link(link_path)
+  local modified_path = modify_path(link_path)
+
+  if vim.fn.filereadable(modified_path) == 0 then
+      print("The linked file is not readable: " .. modified_path)
+      return true
+  end
+
+  push_buffer(vim.api.nvim_get_current_buf())
+
+  vim.api.nvim_command('edit ' .. modified_path)
+  return false
+end
 
 function M.jump_forward()
-    local current_line = vim.api.nvim_get_current_line()
-    local cursor_col = vim.api.nvim_win_get_cursor(0)[2] + 1
+  local current_line = vim.api.nvim_get_current_line()
+  local cursor_col = vim.api.nvim_win_get_cursor(0)[2] + 1
 
-    local index = 1
-    while true do
-        local link_start, link_end, link_path = string.find(current_line, '%[[^%]]+%]%(([^%)%]]*)%)', index)
-        if not link_start then break end
+  local index = 1
+  while true do
+    local link_start, link_end, link_path = string.find(current_line, '%[[^%]]+%]%(([^%)%]]*)%)', index)
+    if not link_start then break end
 
-        if cursor_col >= link_start and cursor_col <= link_end then
-            local modified_path = modify_path(link_path)
-
-            if vim.fn.filereadable(modified_path) == 0 then
-                print("The linked file is not readable: " .. modified_path)
-                return
-            end
-
-            push_buffer(vim.api.nvim_get_current_buf())
-
-            vim.api.nvim_command('edit ' .. modified_path)
-            return
-        end
-
-        index = link_end + 1
+    if cursor_col >= link_start and cursor_col <= link_end then
+      return process_link(link_path)
     end
 
-    print("No Markdown link found under cursor.")
+    index = link_end + 1
+  end
+
+  print("No Markdown link found under cursor.")
 end
+
+
+
+function M.jump_to_nth_link(n)
+  if type(n) ~= "number" or n <= 0 then
+    print("Invalid link number. Please provide a positive integer.")
+    return
+  end
+
+  local current_line = vim.api.nvim_get_current_line()
+
+  local index = 1
+  local count = 0
+  while true do
+    local link_start, link_end, link_path = string.find(current_line, '%[[^%]]+%]%(([^%)%]]*)%)', index)
+    if not link_start then break end
+
+    count = count + 1
+    if count == n then
+      return process_link(link_path)
+    end
+
+    index = link_end + 1
+  end
+
+  if count < n then
+    print("Link number " .. n .. " not found in the current line.")
+  end
+end
+
 
 
 
@@ -77,6 +110,13 @@ function M.setup()
     'MarkNavPrevious',
     M.jump_back,
     {nargs = 0}
+  )
+  vim.api.nvim_create_user_command(
+    'MarkNavJumpTo',
+    function(opts)
+      M.jump_to_nth_link(tonumber(opts.args))
+    end,
+    {nargs = 1}
   )
 end
 
