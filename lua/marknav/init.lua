@@ -37,7 +37,7 @@ end
 local function process_link(link_path)
   local modified_path = modify_path(link_path)
 
-  if vim.fn.filereadable(modified_path) == 0 then
+  if vim.fn.filereadable(modified_path) == 0 or vim.fn.expand('%:p') == modified_path then
       print("The linked file is not readable: " .. modified_path)
       return true
   end
