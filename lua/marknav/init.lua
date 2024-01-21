@@ -114,12 +114,12 @@ end
 -- Set up commands for Markdown file navigation
 function M.setup()
   vim.api.nvim_create_user_command(
-    'MarkNavNext',
+    'MarknavJump',
     M.jump_link_forward,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
-    'MarkNavPrevious',
+    'MarkNavBack',
     M.jump_link_back,
     {nargs = 0}
   )
