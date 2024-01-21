@@ -39,7 +39,7 @@ Right now just Unix-like paths are supported.
 Retain buffer history or delete the buffer on buffer-change?
 Implement cache in lua or with built-in neo(vim) features?
 
-- make buffer stack local for each window/buffer. Otherwise it'll be a mess with multiple tabs / split windows.
+- [x] Window-Scoped buffer stack (lua table with buffer chain) using `BufEnter` autocmd
 
 ## Minor
 

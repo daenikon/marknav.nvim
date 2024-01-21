@@ -1,5 +1,9 @@
 local M = {}
 
+function M.testing()
+  print("test")
+  vim.notify("test2")
+end
 -- Stack to keep track of buffer history
 local buffer_stack = {}
 
@@ -113,6 +117,10 @@ end
 
 -- Set up commands for Markdown file navigation
 function M.setup()
+  vim.api.nvim_create_autocmd({ "VimEnter", "BufEnter" }, {
+    callback = M.testing
+  })
+
   vim.api.nvim_create_user_command(
     'MarknavJump',
     M.jump_link_forward,
