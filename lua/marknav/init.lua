@@ -119,12 +119,12 @@ function M.setup()
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
-    'MarkNavBack',
+    'MarknavBack',
     M.jump_link_back,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
-    'MarkNavJumpTo',
+    'MarknavJumpTo',
     function(opts)
       M.jump_to_nth_link(tonumber(opts.args))
     end,
