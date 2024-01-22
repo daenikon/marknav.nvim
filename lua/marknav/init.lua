@@ -1,47 +1,30 @@
 local M = {}
 
--- Function to push a buffer onto the stack
-function push_to_window_buffer()
-  local bufnr = vim.api.nvim_get_current_buf() 
+-- Push current buffer into window-scoped table
+-- If JumpBack --> remove last element
+function push_to_window_stack()
+  local current_buf = vim.api.nvim_get_current_buf()
+  local temp_stack = vim.w.buffer_stack or {}
 
-  if vim.w.buffer_stack ~= nil then
-    local last_bufnr = vim.w.buffer_stack[#vim.w.buffer_stack]
-    if last_bufnr == bufnr then
-       return
-     end
-    
-    local temp_stack = vim.w.buffer_stack
-    table.insert(temp_stack, bufnr)
-    vim.w.buffer_stack = temp_stack
+  if #temp_stack > 1 and current_buf == temp_stack[#temp_stack - 1] then
+    table.remove(temp_stack)
   else
-    vim.w.buffer_stack = { bufnr }
+    table.insert(temp_stack, current_buf)
   end
-  
-  --print(vim.inspect(vim.w.buffer_stack))
+
+  vim.w.buffer_stack = temp_stack
+  print("Buffer stack: ", vim.inspect(vim.w.buffer_stack))
 end
 
-
--- Function to pop a buffer from the stack and switch to it
+-- Jump to previous buffer unless stack is empty
 function M.jump_link_back()
   local buffer_stack = vim.w.buffer_stack
-  --print(vim.inspect(buffer_stack))
 
-  if #buffer_stack == 1 then
+  if #buffer_stack > 1 then
+    vim.api.nvim_command('buffer ' .. buffer_stack[#buffer_stack - 1])
+  else
     print("Buffer history is empty.")
-    return
   end
-
-
-  local last_bufnr = table.remove(buffer_stack)
-  vim.w.buffer_stack = buffer_stack
-
-  if not vim.api.nvim_buf_is_loaded(last_bufnr) then
-    print("Previous buffer no longer exists.")
-    return
-  end
-
-  local last_bufnr = table.remove(buffer_stack)
-  vim.api.nvim_command('buffer ' .. last_bufnr)
 end
 
 -- works for Unix-like systems only
@@ -136,7 +119,7 @@ function M.setup()
   local augroup = vim.api.nvim_create_augroup("MarknavAutocommands", { clear = true })
   vim.api.nvim_create_autocmd("BufEnter", {
     group = augroup,
-    callback = push_to_window_buffer
+    callback = push_to_window_stack
   })
 
   vim.api.nvim_create_user_command(
