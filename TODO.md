@@ -8,8 +8,9 @@
 
 Utilize buffers, windows and tabs.
 
+- [x] Open link in a new tab (similar to "Shift+Enter" in browser)
+    * [ ] Tab title should be file name
 - [ ] Open link side-by-side - window split
-- [ ] Open link in a new tab (similar to "Shift+Enter" in browser)
 - [ ] Customizable keymapping
 - [ ] Autocommands on file-open or save
 - [ ] Better filetype detect and make plugin usable only in markdown files
@@ -39,11 +40,9 @@ Right now just Unix-like paths are supported.
 Retain buffer history or delete the buffer on buffer-change?
 Implement cache in lua or with built-in neo(vim) features?
 
-- [x] Window-Scoped buffer stack (lua table with buffer chain) using `BufEnter` autocmd
+- [x] Tab-Scoped buffer stack (lua table with buffer chain) using `BufEnter` autocmd
 
 ## Minor
-
-- [ ] Red error message
 
 - [ ] ? Autosave on `:MarknavJump` and `:MarknavBack`
 - [ ] ? Consider using `fnamemodify()` for path concatenation. Should be platform-indepent and more robust
@@ -51,6 +50,8 @@ Implement cache in lua or with built-in neo(vim) features?
 - [ ] ? Consider `gf` and `goto` built-in commands
 - [ ] ? Consider `isfname`
 
+- [x] Move from window-scoped storage (`vim.w`) to tab-scoped storage (`vim.t`)
+- [x] Red error message
 - [x] Disable `:MarknavJump` to the same file
 - [x] Support absolute paths and paths relative to the directory the file is in
 - [x] `:MarknavJump` recognize different links on the same line

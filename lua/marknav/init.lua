@@ -1,8 +1,5 @@
 local buffer = require("marknav.buffer") 
---local linkmgr = require("marknav.linkhandler")
-
--- testing
-local linkfinder = require("marknav.linkfinder")
+local cmds = require("marknav.cmdmgr")
 
 local M = {}
 
@@ -16,23 +13,23 @@ function M.setup()
 
   vim.api.nvim_create_user_command(
     'MarknavJump',
-    linkfinder.marknav_forward,
+    cmds.forward_jump,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
     'MarknavTab',
-    linkfinder.marknav_tab,
+    cmds.tab_jump,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
     'MarknavBack',
-    linkfinder.marknav_back,
+    cmds.back_jump,
     {nargs = 0}
   )
   vim.api.nvim_create_user_command(
     'MarknavJumpTo',
     function(opts)
-      linkfinder.jump_to_nth_link(tonumber(opts.args))
+      cmds.jump_to_nth_link(tonumber(opts.args))
     end,
     {nargs = 1}
   )
