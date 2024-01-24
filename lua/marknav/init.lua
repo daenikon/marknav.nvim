@@ -6,7 +6,7 @@ local M = {}
 -- Set up commands for Markdown file navigation
 function M.setup()
   local augroup = vim.api.nvim_create_augroup("MarknavAutocommands", { clear = true })
-  vim.api.nvim_create_autocmd("BufEnter", {
+  vim.api.nvim_create_autocmd({"BufEnter", "WinEnter"}, {
     group = augroup,
     callback = buffer.handle_stack
   })

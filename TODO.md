@@ -40,7 +40,7 @@ Right now just Unix-like paths are supported.
 Retain buffer history or delete the buffer on buffer-change?
 Implement cache in lua or with built-in neo(vim) features?
 
-- [x] Tab-Scoped buffer stack (lua table with buffer chain) using `BufEnter` autocmd
+- [x] Window-scoped buffer stack (lua table with buffer chain) using `BufEnter` autocmd
 
 ## Minor
 
@@ -50,7 +50,6 @@ Implement cache in lua or with built-in neo(vim) features?
 - [ ] ? Consider `gf` and `goto` built-in commands
 - [ ] ? Consider `isfname`
 
-- [x] Move from window-scoped storage (`vim.w`) to tab-scoped storage (`vim.t`)
 - [x] Red error message
 - [x] Disable `:MarknavJump` to the same file
 - [x] Support absolute paths and paths relative to the directory the file is in
