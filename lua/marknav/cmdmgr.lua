@@ -1,4 +1,5 @@
 PATHMGR = require("marknav.pathmgr")
+BUF = require("marknav.buffer")
 
 local M = {}
 
@@ -6,12 +7,11 @@ local FILE_PATH_PATTERN = '%[[^%]]+%]%(([^%)%]]*)%)'
 
 -- Jump to previous buffer unless stack is empty
 function M.back_jump()
-  local buffer_stack = vim.t.buffer_stack
-  -- go back if stack not empty
-  if #buffer_stack > 1 then
+  local previous_buffer = BUF.get_previous_buffer()
+  if previous_buffer ~= nil then
     -- clear error messages if any and open previous buffer
     vim.cmd("echo")
-    vim.api.nvim_command('buffer ' .. buffer_stack[#buffer_stack - 1])
+    vim.api.nvim_command('buffer ' .. previous_buffer)
     return
   end
   vim.api.nvim_err_writeln("MARKNAV: Buffer history is empty")
