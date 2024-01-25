@@ -80,6 +80,5 @@ function M.tab_jump()
   vim.api.nvim_command('tabnew ' .. file_path)
 end
 
-
 return M
 
