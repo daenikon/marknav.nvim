@@ -13,6 +13,8 @@ function M.handle_stack()
 
   table.insert(temp_stack, current_buf)
   vim.w.buffer_stack = temp_stack
+  -- Clear errors if any
+  vim.cmd("echo")
 end
 
 function M.get_previous_buffer()

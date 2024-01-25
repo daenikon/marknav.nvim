@@ -3,7 +3,6 @@ local cmds = require("marknav.cmdmgr")
 
 local M = {}
 
-
 -- Set up commands for Markdown file navigation
 function M.setup(user_config)
   user_config = user_config or { use_default_keybinds = true }
@@ -20,17 +19,17 @@ function M.setup(user_config)
     callback = function()
       -- User Commands
       vim.api.nvim_create_user_command('MarknavJump', cmds.forward_jump, {nargs = 0})
-      vim.api.nvim_create_user_command('MarknavTab', cmds.tab_jump, {nargs = 0})
       vim.api.nvim_create_user_command('MarknavBack', cmds.back_jump, {nargs = 0})
-      vim.api.nvim_create_user_command('MarknavJumpTo', function(opts) cmds.jump_to_nth_link(tonumber(opts.args)) end, {nargs = 1})
+      vim.api.nvim_create_user_command('MarknavTab', cmds.tab_jump, {nargs = 0})
+      vim.api.nvim_create_user_command('MarknavJumpTo', cmds.input_jump, {nargs = 0})
 
       -- Keybindings
       if user_config.use_default_keybinds then
         local opts = { noremap = true, silent = true }
-        vim.api.nvim_buf_set_keymap(0, 'n', '<Leader>mn', ':MarknavJumpTo ', opts) -- Note: Space after command for arguments
         vim.api.nvim_buf_set_keymap(0, 'n', '<CR>', ':MarknavJump<CR>', opts)
         vim.api.nvim_buf_set_keymap(0, 'n', '<BS>', ':MarknavBack<CR>', opts)
         vim.api.nvim_buf_set_keymap(0, 'n', '<Leader><CR>', ':MarknavTab<CR>', opts)
+        vim.api.nvim_buf_set_keymap(0, 'n', '<Leader>m', ':MarknavJumpTo<CR>', opts)
       end
     end,
   })
