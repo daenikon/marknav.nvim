@@ -8,12 +8,12 @@
 
 Utilize buffers, windows and tabs.
 
+- [x] Better filetype detect and make plugin usable only in markdown files
+- [x] Default keymaps
 - [x] Open link in a new tab (similar to "Shift+Enter" in browser)
     * [ ] Tab title should be file name
 - [ ] Open link side-by-side - window split
-- [ ] Customizable keymapping
 - [ ] Autocommands on file-open or save
-- [ ] Better filetype detect and make plugin usable only in markdown files
 
 - [ ] ? Vim signs to visually mark lines that contain links
 - [ ] ? Customize the appearance of links: highlighting? underscoring? shrink link to name similar to vimwiki?
